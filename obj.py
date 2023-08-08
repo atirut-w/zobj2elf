@@ -71,6 +71,18 @@ class Expression:
         self.expression = load_lstring(file)
 
 
+class MachineCode:
+    def __init__(self, file: BufferedReader):
+        self.length = int.from_bytes(file.read(4), "little")
+        if self.length == 0xFFFFFFFF:
+            return
+
+        self.section = load_lstring(file)
+        self.org = int.from_bytes(file.read(4), "little")
+        self.align = int.from_bytes(file.read(4), "little")
+        self.data = file.read(self.length)
+
+
 class ZObj:
     """Represents a Z80ASM object file"""
 
@@ -128,6 +140,16 @@ class ZObj:
                 break  # TODO: Confirm with Z88DK devs if this is correct
 
             self.external_names.append(name)
+
+        file.seek(machine_code_offset)
+        self.machine_codes: list[MachineCode] = []
+
+        for _ in range(2048):
+            mc = MachineCode(file)
+            if mc.length == 0xFFFFFFFF:
+                break
+
+            self.machine_codes.append(mc)
 
     @property
     def version(self) -> int:
