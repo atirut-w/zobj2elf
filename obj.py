@@ -108,48 +108,52 @@ class ZObj:
         file.seek(module_name_offset)
         self.module_name = load_lstring(file)
 
-        file.seek(expressions_offset)
-        self.expressions: list[Expression] = []
+        if expressions_offset != 0xffffffff:
+            file.seek(expressions_offset)
+            self.expressions: list[Expression] = []
 
-        for _ in range(2048):
-            exp = Expression(file)
+            for _ in range(2048):
+                exp = Expression(file)
 
-            if exp.type == ExpressionType.END:
-                break
-            elif exp.source_file == "":
-                exp.source_file = self.expressions[-1].source_file
+                if exp.type == ExpressionType.END:
+                    break
+                elif exp.source_file == "":
+                    exp.source_file = self.expressions[-1].source_file
 
-            self.expressions.append(exp)
+                self.expressions.append(exp)
 
-        file.seek(module_names_offset)
-        self.module_names: list[ModuleName] = []
+        if module_names_offset != 0xffffffff:
+            file.seek(module_names_offset)
+            self.module_names: list[ModuleName] = []
 
-        for _ in range(2048):
-            modname = ModuleName(file)
-            if modname.scope == ModuleNameScope.END:
-                break
+            for _ in range(2048):
+                modname = ModuleName(file)
+                if modname.scope == ModuleNameScope.END:
+                    break
 
-            self.module_names.append(modname)
+                self.module_names.append(modname)
 
-        file.seek(external_names_offset)
-        self.external_names: list[str] = []
+        if external_names_offset != 0xffffffff:
+            file.seek(external_names_offset)
+            self.external_names: list[str] = []
 
-        for _ in range(2048):
-            name = load_lstring(file)
-            if name == "":
-                break  # TODO: Confirm with Z88DK devs if this is correct
+            for _ in range(2048):
+                name = load_lstring(file)
+                if name == "":
+                    break  # TODO: Confirm with Z88DK devs if this is correct
 
-            self.external_names.append(name)
+                self.external_names.append(name)
 
-        file.seek(machine_code_offset)
-        self.machine_codes: list[MachineCode] = []
+        if machine_code_offset != 0xffffffff:
+            file.seek(machine_code_offset)
+            self.machine_codes: list[MachineCode] = []
 
-        for _ in range(2048):
-            mc = MachineCode(file)
-            if mc.length == 0xFFFFFFFF:
-                break
+            for _ in range(2048):
+                mc = MachineCode(file)
+                if mc.length == 0xffffffff:
+                    break
 
-            self.machine_codes.append(mc)
+                self.machine_codes.append(mc)
 
     @property
     def version(self) -> int:
