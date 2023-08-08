@@ -1,6 +1,16 @@
 from io import BufferedReader
 
 
+def load_string(file: BufferedReader) -> str:
+    length = int.from_bytes(file.read(1), "little")
+    return file.read(length).decode("ascii")
+
+
+def load_lstring(file: BufferedReader) -> str:
+    length = int.from_bytes(file.read(2), "little")
+    return file.read(length).decode("ascii")
+
+
 class ZObj:
     """Represents a Z80ASM object file"""
 
@@ -22,6 +32,9 @@ class ZObj:
         if self.version >= 18:
             self.cpu_id = int.from_bytes(file.read(4), "little")
             self.swap_ix_iy = int.from_bytes(file.read(4), "little")
+        
+        file.seek(module_name_offset)
+        self.module_name = load_lstring(file)
 
     @property
     def version(self) -> int:
