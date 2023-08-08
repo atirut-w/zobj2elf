@@ -29,6 +29,32 @@ class ExpressionType(Enum):
     COMPUTED = "="
 
 
+class ModuleNameScope(Enum):
+    END = chr(0)
+    LOCAL = "L"
+    GLOBAL = "G"
+
+
+class ModuleNameType(Enum):
+    RELOC_ADDR = "A"
+    CONSTANT = "C"
+    COMPUTED = "="
+
+
+class ModuleName:
+    def __init__(self, file: BufferedReader):
+        self.scope: ModuleNameScope = ModuleNameScope(file.read(1).decode("ascii"))
+        if self.scope == ModuleNameScope.END:
+            return
+
+        self.type: ModuleNameType = ModuleNameType(file.read(1).decode("ascii"))
+        self.section = load_lstring(file)
+        self.value = int.from_bytes(file.read(4), "little")
+        self.name = load_lstring(file)
+        self.file_name = load_lstring(file)
+        self.line = int.from_bytes(file.read(4), "little")
+
+
 class Expression:
     def __init__(self, file: BufferedReader):
         self.type: ExpressionType = ExpressionType(file.read(1).decode("ascii"))
@@ -82,6 +108,16 @@ class ZObj:
                 exp.source_file = self.expressions[-1].source_file
 
             self.expressions.append(exp)
+
+        file.seek(module_names_offset)
+        self.module_names: list[ModuleName] = []
+
+        for _ in range(2048):
+            modname = ModuleName(file)
+            if modname.scope == ModuleNameScope.END:
+                break
+
+            self.module_names.append(modname)
 
     @property
     def version(self) -> int:
