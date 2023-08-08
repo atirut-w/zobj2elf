@@ -118,14 +118,14 @@ class ZObj:
                 break
 
             self.module_names.append(modname)
-        
+
         file.seek(external_names_offset)
         self.external_names: list[str] = []
 
         for _ in range(2048):
             name = load_lstring(file)
             if name == "":
-                break # TODO: Confirm with Z88DK devs if this is correct
+                break  # TODO: Confirm with Z88DK devs if this is correct
 
             self.external_names.append(name)
 
