@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/zobj2elf.py",
             "args": [
-                "tests/test.o"
+                "tests/sections.o"
             ],
             "console": "integratedTerminal",
             "justMyCode": true
