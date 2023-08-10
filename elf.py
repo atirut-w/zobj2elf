@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntFlag
 from io import BufferedWriter
 
 
@@ -29,6 +29,35 @@ class ISA(Enum):
     X86 = 0x03
     AMD64 = 0x3E
     Z80 = 0xDC
+
+
+class SegmentType(Enum):
+    NULL = 0x00
+    LOAD = 0x01
+    DYNAMIC = 0x02
+    INTERP = 0x03
+    NOTE = 0x04
+    SHLIB = 0x05
+    PHDR = 0x06
+    TLS = 0x07
+
+
+class SegmentFlags(IntFlag):
+    X = 0x01
+    W = 0x02
+    R = 0x04
+
+
+class Segment:
+    def __init__(self, type: SegmentType, flags=SegmentFlags(0)):
+        self.type = type
+        self.flags = flags
+        self.offset = 0
+        self.virt_addr = 0
+        self.phys_addr = 0
+        self.file_size = 0
+        self.mem_size = 0
+        self.align = 0
 
 
 class ELF:
@@ -79,6 +108,6 @@ class ELF:
                 size, "little" if self.endianness == Endianness.LITTLE else "big"
             )
         )
-    
+
     def __write_ptr(self, file: BufferedWriter, value: int):
         self.__write_int(file, value, 4 if self.bitness == Bitness.BIT32 else 8)
