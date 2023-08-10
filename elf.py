@@ -32,5 +32,12 @@ class ABI(Enum):
     OPENVOS = 0x12
 
 
+class ISA(Enum):
+    NONE = 0x00
+    X86 = 0x03
+    AMD64 = 0x3e
+    Z80 = 0xdc
+
+
 class ELF:
     pass
