@@ -1,4 +1,5 @@
 from enum import Enum
+from io import BufferedWriter
 
 
 class Bitness(Enum):
@@ -38,3 +39,6 @@ class ELF:
         self.abi_version = 0
         self.type = type
         self.isa = isa
+
+    def write(self, file: BufferedWriter):
+        pass
