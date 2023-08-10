@@ -2,10 +2,19 @@
 from argparse import ArgumentParser, Namespace
 
 from obj import ZObj
+from elf import ELF, ISA, Type
 
 
 def main(args: Namespace) -> int:
     obj = ZObj(open(args.input, "rb"))
+    elf = ELF(ISA.Z80, Type.REL) # We don't know if it's executable or not (yet)
+
+    if args.output == None:
+        args.output = args.input[:args.input.rfind(".")] + ".elf"
+    
+    with open(args.output, "wb") as f:
+        elf.write(f)
+
     return 0
 
 
