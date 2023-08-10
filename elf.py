@@ -54,15 +54,13 @@ class ELF:
         self.__write_int(file, self.type.value, 2)
         self.__write_int(file, self.isa.value, 2)
         self.__write_int(file, self.version, 4)
-        self.__write_int(
-            file, self.entry_point, 4 if self.bitness == Bitness.BIT32 else 8
-        )
+        self.__write_ptr(file, self.entry_point)
 
         phoff = file.tell()
-        self.__write_int(file, 0, 4 if self.bitness == Bitness.BIT32 else 8)
+        self.__write_ptr(file, 0)
 
         shoff = file.tell()
-        self.__write_int(file, 0, 4 if self.bitness == Bitness.BIT32 else 8)
+        self.__write_ptr(file, 0)
 
         self.__write_int(file, self.flags, 4)
         self.__write_int(file, 52 if self.bitness == Bitness.BIT32 else 64, 2)
@@ -81,3 +79,6 @@ class ELF:
                 size, "little" if self.endianness == Endianness.LITTLE else "big"
             )
         )
+    
+    def __write_ptr(self, file: BufferedWriter, value: int):
+        self.__write_int(file, value, 4 if self.bitness == Bitness.BIT32 else 8)
