@@ -26,12 +26,12 @@ class Type(Enum):
 class ISA(Enum):
     NONE = 0x00
     X86 = 0x03
-    AMD64 = 0x3e
-    Z80 = 0xdc
+    AMD64 = 0x3E
+    Z80 = 0xDC
 
 
 class ELF:
-    def __init__(self, isa = ISA.NONE, type = Type.NONE, abi = ABI.LINUX):
+    def __init__(self, isa=ISA.NONE, type=Type.NONE, abi=ABI.LINUX):
         self.bitness = Bitness.BIT32
         self.endianness = Endianness.LITTLE
         self.abi = abi
