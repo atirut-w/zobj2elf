@@ -31,4 +31,10 @@ class ISA(Enum):
 
 
 class ELF:
-    pass
+    def __init__(self, isa = ISA.NONE, type = Type.NONE, abi = ABI.LINUX):
+        self.bitness = Bitness.BIT32
+        self.endianness = Endianness.LITTLE
+        self.abi = abi
+        self.abi_version = 0
+        self.type = type
+        self.isa = isa
