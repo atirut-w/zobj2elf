@@ -2,6 +2,9 @@
 #include <argparse/argparse.hpp>
 #include <string>
 #include <filesystem>
+#include <fstream>
+#include <system_error>
+#include <zobj.hpp>
 
 using namespace std;
 using namespace argparse;
@@ -27,10 +30,23 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    if (!filesystem::exists(program.get<string>("input")))
+    ifstream input(program.get<string>("input"), ios::binary);
+    if (!input.is_open())
     {
-        cerr << "Input file `" << program.get<string>("input") << "` does not exist." << endl;
-        exit(1);
+        cerr << "Cannot open `" << program.get<string>("input") << "`" << endl;
+        exit(0);
+    }
+
+    try
+    {
+        auto obj = ZObj::fromFile(input);
+        
+        cout << "Version: " << obj->version << endl;
+    }
+    catch (const std::runtime_error &err)
+    {
+        cerr << err.what() << endl;
+        exit(0);
     }
 
     return 0;
